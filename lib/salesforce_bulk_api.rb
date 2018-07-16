@@ -20,24 +20,24 @@ module SalesforceBulkApi
       @listeners = { job_created: [] }
     end
 
-    def upsert(sobject, records, external_field, get_response = false, send_nulls = false, no_null_list = [], batch_size = 10000, timeout = 1500)
-      do_operation('upsert', sobject, records, external_field, get_response, timeout, batch_size, send_nulls, no_null_list)
+    def upsert(sobject, records, external_field, get_response = false, concurrency_mode = nil, send_nulls = false, no_null_list = [], batch_size = 10000, timeout = 1500)
+      do_operation('upsert', sobject, records, external_field, get_response, timeout, batch_size, concurrency_mode, send_nulls, no_null_list)
     end
 
-    def update(sobject, records, get_response = false, send_nulls = false, no_null_list = [], batch_size = 10000, timeout = 1500)
-      do_operation('update', sobject, records, nil, get_response, timeout, batch_size, send_nulls, no_null_list)
+    def update(sobject, records, get_response = false, concurrency_mode = nil, send_nulls = false, no_null_list = [], batch_size = 10000, timeout = 1500)
+      do_operation('update', sobject, records, nil, get_response, timeout, batch_size, concurrency_mode, send_nulls, no_null_list)
     end
 
-    def create(sobject, records, get_response = false, send_nulls = false, batch_size = 10000, timeout = 1500)
-      do_operation('insert', sobject, records, nil, get_response, timeout, batch_size, send_nulls)
+    def create(sobject, records, get_response = false, concurrency_mode = nil, send_nulls = false, batch_size = 10000, timeout = 1500)
+      do_operation('insert', sobject, records, nil, get_response, timeout, batch_size, concurrency_mode, send_nulls)
     end
 
-    def delete(sobject, records, get_response = false, batch_size = 10000, timeout = 1500)
-      do_operation('delete', sobject, records, nil, get_response, timeout, batch_size)
+    def delete(sobject, records, get_response = false, concurrency_mode = nil, batch_size = 10000, timeout = 1500)
+      do_operation('delete', sobject, records, nil, get_response, timeout, batch_size, concurrency_mode)
     end
 
-    def query(sobject, query, batch_size = 10000, timeout = 1500)
-      do_operation('query', sobject, query, nil, true, timeout, batch_size)
+    def query(sobject, query, concurrency_mode = nil, batch_size = 10000, timeout = 1500)
+      do_operation('query', sobject, query, nil, true, timeout, batch_size, concurrency_mode)
     end
 
     def counters
@@ -66,7 +66,7 @@ module SalesforceBulkApi
       SalesforceBulkApi::Job.new(job_id: job_id, connection: @connection)
     end
 
-    def do_operation(operation, sobject, records, external_field, get_response, timeout, batch_size, send_nulls = false, no_null_list = [])
+    def do_operation(operation, sobject, records, external_field, get_response, timeout, batch_size, concurrency_mode = nil, send_nulls = false, no_null_list = [])
       count operation.to_sym
 
       job = SalesforceBulkApi::Job.new(
@@ -74,6 +74,7 @@ module SalesforceBulkApi
           sobject: sobject,
           records: records,
           external_field: external_field,
+          concurrency_mode: concurrency_mode,
           connection: @connection
       )
 
